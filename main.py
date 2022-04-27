@@ -3,16 +3,16 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-import data_source_loader as data_loader
+import data_loader
 
 
 def spam_detector():
-    data = data_loader.get_data()
-    print(type(data))
-    print(data.shape)
+    data = data_loader.load_data()
+    # print(type(data))
+    print(f'Shape of data frame is {data.shape}')
 
     print(data.head())
-    print(data.tail())
+    # print(data.tail())
 
 
 # Press the green button in the gutter to run the script.

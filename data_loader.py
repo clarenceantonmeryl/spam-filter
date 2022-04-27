@@ -57,6 +57,17 @@ def get_dataframe_from_path(path, category):
     return pd.DataFrame(rows, index=row_names)
 
 
+def set_data_index(data):
+
+    # Add Document IDs to Track Emails in Dataset
+    document_ids = range(0, len(data.index))
+    data['DOC_ID'] = document_ids
+    # data['FILE_NAME'] = data.index
+    data.set_index('DOC_ID', inplace=True)
+
+    return data
+
+
 def get_data_source_from_raw_files():
 
     # Load data from spam 1 path
@@ -125,11 +136,8 @@ def get_data_source_from_raw_files():
     except KeyError:
         print("System files not found.")
 
-    # Add Document IDs to Track Emails in Dataset
-    document_ids = range(0, len(data.index))
-    data['DOC_ID'] = document_ids
-    data['FILE_NAME'] = data.index
-    data.set_index('DOC_ID', inplace=True)
+    # Set DOC_IDs
+    data = set_data_index(data)
 
     # print(data.head())
     # print(data.tail())
@@ -137,30 +145,27 @@ def get_data_source_from_raw_files():
     return data
 
 
-def save_data(data):
+def save_json_data(data):
     data.to_json(DATA_SOURCE_JSON_FILE)
 
 
-def get_data_from_json():
+def load_data_from_json():
     data = pd.read_json(DATA_SOURCE_JSON_FILE)
 
-    # Add Document IDs to Track Emails in Dataset
-    document_ids = range(0, len(data.index))
-    data['DOC_ID'] = document_ids
-    # data['FILE_NAME'] = data.index
-    data.set_index('DOC_ID', inplace=True)
+    # Set DOC_IDs
+    data = set_data_index(data)
 
     return data
 
 
-def get_data():
+def load_data():
     print(f"Loading data frame from: {DATA_SOURCE_JSON_FILE}")
 
     # data = get_data_source_from_raw_files()
 
-    # save_data(data)
+    # save_json_data(data)
 
-    data = get_data_from_json()
+    data = load_data_from_json()
 
     # print(data.shape)
 
