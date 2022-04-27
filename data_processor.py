@@ -18,6 +18,8 @@ def download_resource() -> None:
 
     nltk_downloader.fetch('punkt')
     nltk_downloader.fetch('stopwords')
+    nltk_downloader.fetch('gutenberg')
+    nltk_downloader.fetch('shakespeare')
 
 
 # Converting to lower case
@@ -96,17 +98,28 @@ def remove_html_tags(html_text: str) -> str:
     return soup.get_text()
 
 
-def clean_stemmed_tokens(text: str, is_stem=True) -> list[str]:
+def clean_tokens(text: str) -> list[str]:
+
+    """
+    Get a cleaned (without HTML tags) list of tokens without stopwords.
+
+    :param text: Raw text to clean.
+    :return: Return a list of clean words.
+    """
+
+    return remove_stopwords(tokenize_text(remove_html_tags(text)), is_stem=False)
+
+
+def clean_stemmed_tokens(text: str) -> list[str]:
 
     """
     Get a cleaned (without HTML tags) list of stemmed tokens without stopwords.
 
-    :param is_stem: Flag to apply stemming.
     :param text: Raw text to clean.
     :return: Return a list of clean stemmed words.
     """
 
-    return remove_stopwords(tokenize_text(remove_html_tags(text)), is_stem)
+    return remove_stopwords(tokenize_text(remove_html_tags(text)), is_stem=True)
 
 
 
