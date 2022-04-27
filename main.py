@@ -14,6 +14,8 @@ def spam_detector():
     print(data.head())
     # print(data.tail())
 
+    print(data.CATEGORY.value_counts())
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
