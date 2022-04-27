@@ -1,7 +1,14 @@
 import matplotlib.pyplot as plt
 
 
-def draw_pie_chart(data):
+def draw_pie_chart(data) -> None:
+
+    """
+    Draw a pie chart of different categories in the supplied DataFrame.
+
+    :param data: A DataFrame to be visualized.
+    """
+
     # print(data.CATEGORY.value_counts())
     spam_count = data.CATEGORY.value_counts()[1]
     ham_count = data.CATEGORY.value_counts()[0]

@@ -13,11 +13,19 @@ SPAM_2_PATH = 'data/source/spam-assassin-corpus/spam-1'
 DATA_SOURCE_JSON_FILE = 'data/source/data-source.json'
 
 
-def extract_email(file):
+def extract_email(file) -> str:
+
+    """
+    Extract the email body from the file path.
+
+    :param file: Relative file path.
+    :return: Email body without the email header part.
+    """
+
     with open(file=file, mode='r', encoding='latin-1') as message:
         lines = message.readlines()
 
-    body = None
+    body: str = ""
 
     try:
         body_index = lines.index('\n')
@@ -26,19 +34,26 @@ def extract_email(file):
         pass
 
     else:
-        body = lines[body_index:]
+        body_lines = lines[body_index:]
 
-        for line in body:
+        for line in body_lines:
             if line == '\n':
-                body.remove(line)
+                body_lines.remove(line)
 
-        body = '\n'.join(line.strip() for line in body if line != '\n')
+        body = '\n'.join(line.strip() for line in body_lines if line != '\n')
 
     finally:
         return body
 
 
 def email_body_generator(path):
+
+    """
+    Email body generator function
+    :param path: Path of a directory where raw emails are present.
+    :return: Yields the extracted email body.
+    """
+
     for root, dirctory_names, file_names in os.walk(path):
         for file_name in file_names:
             file_path = join(root, file_name)
@@ -47,7 +62,16 @@ def email_body_generator(path):
             yield file_name, body
 
 
-def get_dataframe_from_path(path, category):
+def get_dataframe_from_path(path, category) -> pd.DataFrame:
+
+    """
+    Get the DataFrame object of all emails in a path.
+
+    :param path: Path of the directory of raw emails.
+    :param category: Category of the emails.
+    :return: DataFrame of the all emails in the supplied directory path.
+    """
+
     rows = []
     row_names = []
     for file_name, body in email_body_generator(path=path):
@@ -57,18 +81,13 @@ def get_dataframe_from_path(path, category):
     return pd.DataFrame(rows, index=row_names)
 
 
-def set_data_index(data):
+def get_data_source_from_raw_files() -> pd.DataFrame:
 
-    # Add Document IDs to Track Emails in Dataset
-    document_ids = range(0, len(data.index))
-    data['DOC_ID'] = document_ids
-    # data['FILE_NAME'] = data.index
-    data.set_index('DOC_ID', inplace=True)
+    """
+    Fetch the DataFrame of all source emails.
 
-    return data
-
-
-def get_data_source_from_raw_files():
+    :return: A DataFrame of all emails from 'Spam Assassin Corpus'
+    """
 
     # Load data from spam 1 path
     spam_emails = get_dataframe_from_path(
@@ -137,7 +156,10 @@ def get_data_source_from_raw_files():
         print("System files not found.")
 
     # Set DOC_IDs
-    data = set_data_index(data)
+    document_ids = range(0, len(data.index))
+    data['DOC_ID'] = document_ids
+    data['FILE_NAME'] = data.index
+    data.set_index('DOC_ID', inplace=True)
 
     # print(data.head())
     # print(data.tail())
@@ -145,20 +167,43 @@ def get_data_source_from_raw_files():
     return data
 
 
-def save_json_data(data):
+def save_json_data(data: pd.DataFrame) -> None:
+
+    """
+    Save the DataFrame as a JSON file.
+
+    :param data: The DataFrame to be saved as JSON file.
+    """
+
     data.to_json(DATA_SOURCE_JSON_FILE)
 
 
-def load_data_from_json():
+def load_data_from_json() -> pd.DataFrame:
+
+    """
+    Load and return a DataFrame from JSON file.
+
+    :return: A DataFrame from the JSON file.
+    """
+
     data = pd.read_json(DATA_SOURCE_JSON_FILE)
 
     # Set DOC_IDs
-    data = set_data_index(data)
+    document_ids = range(0, len(data.index))
+    data['DOC_ID'] = document_ids
+    data.set_index('DOC_ID', inplace=True)
 
     return data
 
 
-def load_data():
+def load_data() -> pd.DataFrame:
+
+    """
+    Load the source data as DataFrame.
+
+    :return: A DataFrame of the data source.
+    """
+
     print(f"Loading data frame from: {DATA_SOURCE_JSON_FILE}")
 
     # data = get_data_source_from_raw_files()

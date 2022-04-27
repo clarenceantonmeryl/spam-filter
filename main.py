@@ -16,16 +16,26 @@ def spam_detector():
     # print(data.head())
     # print(data.tail())
 
-    # data_visualiser.draw_pie_chart(data)
+    # print(data.at[2, "MESSAGE"])
 
+    # data_visualizer.draw_pie_chart(data)
 
-    msg = "All work and no play makes Jack a dull boy. To be or not to be. ??? Nobody expects the Spanish Inquisition!"
-    words = data_processor.tokenize_message(msg)
+    # data_processor.download_resource()
+
+    # print(data_processor.get_stopwords())
+
+    sample_text = "a b c d e f g h i j k l m n o p q r s t u v w x y z " \
+                  "All work and no <strong>play makes</strong> Jack a dull boy. To be or not to be. " \
+                  "??? Nobody expects the Spanish Inquisition!"
+    no_html = data_processor.remove_html_tags(sample_text)
+    words = data_processor.tokenize_text(no_html)
     filtered_words = data_processor.remove_stopwords(words)
     print(filtered_words)
 
-    data_processor.download_resource()
+    print(data_processor.clean_stemmed_tokens(sample_text))
+    print(data_processor.clean_stemmed_tokens(data.at[2, "MESSAGE"], is_stem=True))
 
+    # print(data_processor.remove_html_tags(data.at[2, "MESSAGE"]))
 
 
 # Press the green button in the gutter to run the script.
