@@ -6,16 +6,17 @@
 import data_source_loader as data_loader
 
 
-data_loader.get_data()
+def spam_detector():
+    data = data_loader.get_data()
+    print(type(data))
+    print(data.shape)
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+    print(data.head())
+    print(data.tail())
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    spam_detector()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

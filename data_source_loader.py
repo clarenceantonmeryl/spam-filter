@@ -47,7 +47,7 @@ def email_body_generator(path):
             yield file_name, body
 
 
-def dataframe_from_path(path, category):
+def get_dataframe_from_path(path, category):
     rows = []
     row_names = []
     for file_name, body in email_body_generator(path=path):
@@ -58,97 +58,113 @@ def dataframe_from_path(path, category):
 
 
 def get_data_source_from_raw_files():
-    spam_emails = dataframe_from_path(
+
+    # Load data from spam 1 path
+    spam_emails = get_dataframe_from_path(
         path=SPAM_1_PATH,
         category=constant.SPAM_CATEGORY
     )
 
+    # Append data from spam 2 path
     spam_emails = pd.concat(
         [
             spam_emails,
-            dataframe_from_path(path=SPAM_2_PATH, category=constant.SPAM_CATEGORY)
+            get_dataframe_from_path(path=SPAM_2_PATH, category=constant.SPAM_CATEGORY)
         ]
     )
 
     # print(spam_emails.head())
     # print(spam_emails.shape)
 
-    ham_emails = dataframe_from_path(
+    # Load data from ham 1 path
+    ham_emails = get_dataframe_from_path(
         path=HAM_1_PATH,
         category=constant.HAM_CATEGORY
     )
 
+    # Append data from ham 2 path
     ham_emails = pd.concat(
         [
             ham_emails,
-            dataframe_from_path(path=HAM_2_PATH, category=constant.HAM_CATEGORY)
+            get_dataframe_from_path(path=HAM_2_PATH, category=constant.HAM_CATEGORY)
         ]
     )
 
     # print(ham_emails.head())
     # print(ham_emails.shape)
 
-    df = pd.concat([spam_emails, ham_emails])
+    data = pd.concat([spam_emails, ham_emails])
 
-    # print(df.shape)
-    # print(df.head())
-    # print(df.tail())
+    # print(data.shape)
+    # print(data.head())
+    # print(data.tail())
 
     # Check null
-    # print(df['MESSAGE'].isnull().values.any())
-    # print(df[df.MESSAGE.isnull()].index)
-    # print(df.index.get_loc('.DS_Store'))
+    # print(data['MESSAGE'].isnull().values.any())
+    # print(data[data.MESSAGE.isnull()].index)
+    # print(data.index.get_loc('.DS_Store'))
     #
-    # print(df[692:695])
+    # print(data[692:695])
 
-    # df = df.drop(['.DS_Store'])
-    # print(df['MESSAGE'].isnull().values.any())
-    # print(df[df.MESSAGE.isnull()].index)
-    # print(df[692:695])
+    # print(data['MESSAGE'].isnull().values.any())
+    # print(data[data.MESSAGE.isnull()].index)
+    # print(data[692:695])
 
     # Check empty
-    # print((df.MESSAGE.str.len() == 0).any())
+    # print((data.MESSAGE.str.len() == 0).any())
 
     # Locate empty
-    # print(df(df.MESSAGE.str.len() == 0).index)
-    # df.index.get_loc('.DS_Store')
+    # print(data(data.MESSAGE.str.len() == 0).index)
+    # data.index.get_loc('.DS_Store')
 
-    # Remove System File Entries from Dataframe
-    # df = df.drop(['cmds', 'DS_Store'])
-    # df.drop(['cmds', 'DS_Store'], inplace=True)
+    try:
+        # Remove System File Entries from Dataframe
+        # data = data.drop(['cmds', 'DS_Store'])
+        # data.drop(['cmds', 'DS_Store'], inplace=True)
+        data = data.drop(['.DS_Store'])
+    except KeyError:
+        print("System files not found.")
 
     # Add Document IDs to Track Emails in Dataset
-    document_ids = range(0, len(df.index))
-    df['DOC_ID'] = document_ids
-    df['FILE_NAME'] = df.index
-    df.set_index('DOC_ID', inplace=True)
+    document_ids = range(0, len(data.index))
+    data['DOC_ID'] = document_ids
+    data['FILE_NAME'] = data.index
+    data.set_index('DOC_ID', inplace=True)
 
-    print(df.head())
-    print(df.tail())
+    # print(data.head())
+    # print(data.tail())
 
-    return df
+    return data
 
 
-def save_data(df):
-    df.to_json(DATA_SOURCE_JSON_FILE)
+def save_data(data):
+    data.to_json(DATA_SOURCE_JSON_FILE)
 
 
 def get_data_from_json():
-    df = pd.read_json(DATA_SOURCE_JSON_FILE)
+    data = pd.read_json(DATA_SOURCE_JSON_FILE)
 
     # Add Document IDs to Track Emails in Dataset
-    document_ids = range(0, len(df.index))
-    df['DOC_ID'] = document_ids
-    df['FILE_NAME'] = df.index
-    df.set_index('DOC_ID', inplace=True)
+    document_ids = range(0, len(data.index))
+    data['DOC_ID'] = document_ids
+    # data['FILE_NAME'] = data.index
+    data.set_index('DOC_ID', inplace=True)
 
-    return df
+    return data
 
 
 def get_data():
-    print(f"Hello world {constant.SPAM_CATEGORY} {DATA_SOURCE_JSON_FILE}")
+    print(f"Loading data frame from: {DATA_SOURCE_JSON_FILE}")
+
     # data = get_data_source_from_raw_files()
+
     # save_data(data)
+
     data = get_data_from_json()
-    print(data.head())
-    print(data.tail())
+
+    # print(data.shape)
+
+    # print(data.head())
+    # print(data.tail())
+
+    return data
