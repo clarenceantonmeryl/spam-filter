@@ -1,126 +1,117 @@
+import pandas as pd
 
-import utility.nltk_downloader as nltk_downloader
+import data_pre_processor
+from utility import constant
 
-import nltk
-from nltk.stem import PorterStemmer
-# from nltk.stem import SnowballStemmer
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
-from bs4 import BeautifulSoup
+from sklearn.model_selection import train_test_split
 
 
-def download_resource() -> None:
-
-    """
-    Downloads the required NLTK components.
-    """
-
-    nltk_downloader.fetch('punkt')
-    nltk_downloader.fetch('stopwords')
-    nltk_downloader.fetch('gutenberg')
-    nltk_downloader.fetch('shakespeare')
+def generate_stemmed_messages(data: pd.DataFrame):
+    data['MESSAGE'] = data.MESSAGE.apply(data_pre_processor.clean_stemmed_text)
+    return data
 
 
-# Converting to lower case
-# Tokenizing
-# Removing stop words
-# Word stemming
-# Removing HTML tags
+def generate_vocabulary(data: pd.DataFrame, is_stem=True):
 
-
-stemmer = PorterStemmer()
-# stemmer = SnowballStemmer('english')
-
-
-def stem_word(word: str) -> str:
-
-    """
-    Stem the word.
-
-    :param word: The word to be stemmed.
-    :return: Stemmed word.
-    """
-    return stemmer.stem(word)
-
-
-def tokenize_text(text) -> list[str]:
-
-    """
-    Tokenize the given text.
-
-    :param text: Text to be tokenized.
-    :return: List of tokenized words.
-    """
-
-    return word_tokenize(text.lower())
-
-
-def get_stopwords() -> set[str]:
-
-    """
-    Get the set of stopwords.
-
-    :return: A set of stopwords.
-    """
-
-    return set(stopwords.words('english'))
-
-
-def remove_stopwords(words_list: list[str], is_stem=True) -> list:
-
-    """
-    Remove stopwords from the list of words.
-
-    :param is_stem: Flag to stem the words
-    :param words_list: List of words to filter the stopwords.
-    :return: A filtered list of words with the stopwords.
-    """
-
-    stopwords_set = get_stopwords()
-    if is_stem:
-        return [stem_word(word) for word in words_list if word.isalpha() and word not in stopwords_set]
+    if not is_stem:
+        nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_stemmed_tokens)
     else:
-        return [word for word in words_list if word.isalpha() and word not in stopwords_set]
+        nested_list_all = data.MESSAGE.apply(data_pre_processor.tokenize_text)
+
+    flat_list_all = [word for sub_list in nested_list_all for word in sub_list]
+
+    unique_words = pd.Series(flat_list_all).value_counts()
+    frequent_words = unique_words[0:constant.VOCABULARY_SIZE]
+
+    print(frequent_words)
+    print(frequent_words[1])
+
+    vocabulary = pd.DataFrame(
+        {
+            'VOCAB_WORD': frequent_words.index.values,
+            'WORD_COUNT': frequent_words.values
+        },
+        index=list(range(0, constant.VOCABULARY_SIZE))
+    )
+    vocabulary.index.name = "WORD_ID"
+
+    print(vocabulary)
+
+    return vocabulary
 
 
-def remove_html_tags(html_text: str) -> str:
+def generate_vocabulary_index(vocabulary: pd.DataFrame):
+    return pd.Index(vocabulary.VOCAB_WORD)
+
+
+# Generate Features & a Sparse Matrix
+
+def generate_train_test_data(data: pd.DataFrame, is_stem=True):
+
+    print('generate_features'.upper())
+
+    if not is_stem:
+        nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_stemmed_tokens)
+    else:
+        nested_list_all = data.MESSAGE.apply(data_pre_processor.tokenize_text)
+
+    # print(type(nested_list_all))
+    # print(nested_list_all)
+
+    word_columns_df = pd.DataFrame.from_records(nested_list_all.tolist())
+    word_columns_df.index.name = "DOC_ID"
+
+    # print(word_columns_df.head())
+    # print(word_columns_df.shape)
+
+    x_train, x_test, y_train, y_test = train_test_split(word_columns_df, data.CATEGORY, test_size=0.3, random_state=42)
+
+    print(f'No. of training sample: {x_train.shape}')
+    print(f'Fraction of training set: {x_train.shape[0] / word_columns_df.shape[0]}')
+    print("X_train\n", x_train.head())
+    print("y_train\n", y_train.head())
+
+    print("X_test\n", x_test.head())
+    print("y_test\n", y_test.head())
+
+    return x_train, x_test, y_train, y_test
+
+
+def make_sparse_matrix(x_dataframe: pd.DataFrame, vocabulary_index, y_dataframe):
 
     """
-    Remove the HTML tags from the text.
+    Returns sparse matrix as DataFrame
 
-    :param html_text: Text with HTML tags.
-    :return: Text without HTML tags.
+    :param x_dataframe: A DataFrame with words in the columns with a document id as index (x_train or x_test)
+    :param vocabulary_index: index of words ordered by word_id
+    :param y_dataframe: Category of a series (y_train or y_test)
+    :return:
     """
 
-    soup = BeautifulSoup(html_text, 'html.parser')
-    # return soup.prettify()
-    return soup.get_text()
+    rows = x_dataframe.shape[0]
+    columns = x_dataframe.shape[1]
 
+    word_set = set(vocabulary_index)
 
-def clean_tokens(text: str) -> list[str]:
+    sparse_matrix = []
 
-    """
-    Get a cleaned (without HTML tags) list of tokens without stopwords.
+    for row in range(rows):
+        for column in range(columns):
 
-    :param text: Raw text to clean.
-    :return: Return a list of clean words.
-    """
+            word = x_dataframe.iat[row, column]
 
-    return remove_stopwords(tokenize_text(remove_html_tags(text)), is_stem=False)
+            if word in word_set:
+                doc_id = y_dataframe.index[row]
+                word_id = vocabulary_index.get_loc(word)
+                category = y_dataframe.at[doc_id]
 
+                item = {
+                    'DOC_ID': doc_id,
+                    'WORD_ID': word_id,
+                    'LABEL': category,
+                    'OCCURRENCE': 1
+                }
 
-def clean_stemmed_tokens(text: str) -> list[str]:
+                sparse_matrix.append(item)
 
-    """
-    Get a cleaned (without HTML tags) list of stemmed tokens without stopwords.
-
-    :param text: Raw text to clean.
-    :return: Return a list of clean stemmed words.
-    """
-
-    return remove_stopwords(tokenize_text(remove_html_tags(text)), is_stem=True)
-
-
-
-
+    return pd.DataFrame(sparse_matrix)

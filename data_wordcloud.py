@@ -5,7 +5,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import nltk
 
-import data_processor
+import data_pre_processor
 
 WHALE_FILE = 'resource/wordcloud/whale-icon.png'
 SKULL_FILE = 'resource/wordcloud/skull-icon.png'
@@ -64,7 +64,7 @@ def generate_email_wordcloud(data: pd.DataFrame):
     doc_ids_spam = data[data.CATEGORY == 1].index
     doc_ids_ham = data[data.CATEGORY == 0].index
 
-    nested_list_all = data.MESSAGE.apply(data_processor.clean_tokens)  # Make sure it is not stemmed.
+    nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_tokens)  # Make sure it is not stemmed.
     nested_list_spam = nested_list_all.loc[doc_ids_spam]
     nested_list_ham = nested_list_all.loc[doc_ids_ham]
 

@@ -12,6 +12,10 @@ SPAM_2_PATH = 'data/source/spam-assassin-corpus/spam-1'
 
 # DATA_SOURCE_JSON_FILE = 'data/source/data-source.json'
 DATA_SOURCE_JSON_FILE = 'data/source/data-source-original.json'
+DATA_STEMMED_CSV_FILE = 'data/source/data-stemmed.csv'
+VOCABULARY_CSV_FILE = 'data/source/vocabulary.csv'
+
+TRAINING_DATA_FILE = 'data/train/train.csv'
 
 
 def extract_email(file) -> str:
@@ -150,9 +154,9 @@ def get_data_source_from_raw_files() -> pd.DataFrame:
 
     try:
         # Remove System File Entries from Dataframe
-        # data = data.drop(['cmds', 'DS_Store'])
+        data = data.drop(['cmds', 'DS_Store'])
+        # data = data.drop(['.DS_Store'])
         # data.drop(['cmds', 'DS_Store'], inplace=True)
-        data = data.drop(['.DS_Store'])
     except KeyError:
         print("System files not found.")
 
@@ -230,3 +234,68 @@ def load_data() -> pd.DataFrame:
     # print(emails_series)
 
     return data
+
+
+def save_stemmed_csv_data(data: pd.DataFrame):
+
+    """
+    Save the DataFrame as a JSON file.
+
+    :param data: The DataFrame to be saved as CSV file.
+    """
+
+    data.to_csv(DATA_STEMMED_CSV_FILE)
+
+
+def load_stemmed_data() -> pd.DataFrame:
+
+    """
+    Load the stemmed data as DataFrame.
+
+    :return: A DataFrame of the stemmed data.
+    """
+
+    print(f"Loading stemmed data frame from: {DATA_STEMMED_CSV_FILE}")
+
+    data = pd.read_csv(DATA_STEMMED_CSV_FILE)
+    # Set DOC_IDs
+    data.set_index('DOC_ID', inplace=True)
+
+    return data
+
+
+def save_csv_vocabulary(vocabulary: pd.DataFrame):
+    """
+    Save the DataFrame as a JSON file.
+
+    :param vocabulary: The DataFrame to be saved as JSON file.
+    """
+
+    # vocabulary.to_csv(VOCABULARY_CSV_FILE, index_label=vocabulary.index.name, header=vocabulary.VOCAB_WORD.name)
+    vocabulary.to_csv(VOCABULARY_CSV_FILE)
+
+
+def load_vocabulary() -> pd.DataFrame:
+
+    """
+    Load the vocabulary data as DataFrame.
+
+    :return: A DataFrame of the data source.
+    """
+
+    print(f"Loading vocabulary data frame from: {VOCABULARY_CSV_FILE}")
+
+    vocabulary = pd.read_csv(VOCABULARY_CSV_FILE)
+    # Set WORD_IDs
+    vocabulary.set_index('WORD_ID', inplace=True)
+
+    return vocabulary
+
+
+def save_csv_training_data(training_data: pd.DataFrame):
+    training_data.to_csv(TRAINING_DATA_FILE)
+
+
+def load_training_data() -> pd.DataFrame:
+    training_data = pd.read_csv(TRAINING_DATA_FILE)
+    return training_data
