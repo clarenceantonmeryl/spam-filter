@@ -68,9 +68,6 @@ def generate_email_wordcloud(data: pd.DataFrame):
     nested_list_spam = nested_list_all.loc[doc_ids_spam]
     nested_list_ham = nested_list_all.loc[doc_ids_ham]
 
-    print(nested_list_spam.shape)
-    print(nested_list_ham.shape)
-
     flat_list_spam = [word for sub_list in nested_list_spam for word in sub_list]
     flat_list_ham = [word for sub_list in nested_list_ham for word in sub_list]
 
@@ -79,6 +76,7 @@ def generate_email_wordcloud(data: pd.DataFrame):
 
     generate_wordcloud(text=ham_text, mask='THUMBS_UP', colormap='winter')
     generate_wordcloud(text=spam_text, mask='THUMBS_DOWN', colormap='gist_heat')
+
     # generate_wordcloud(text=ham_text, mask='THUMBS_UP', colormap='Greens')
     # generate_wordcloud(text=spam_text, mask='THUMBS_DOWN', colormap='Reds')
 

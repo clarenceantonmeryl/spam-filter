@@ -18,30 +18,15 @@ def spam_detector():
 
     data = data_loader.load_data()
     # print(type(data))
+    # data_visualizer.draw_pie_chart(data)
+    # data_wordcloud.generate_email_wordcloud(data)
+
     print(f'Shape of data frame is {data.shape}')
-
-    # print(data.head())
-    # print(data.tail())
-
-    # print(data.at[2, "MESSAGE"])
-    # print(data.iat[2, 0])
-    # print(data.iat[2, 1])
-    # print(data.iat[2, 2])
-
-    # print(data.iloc[3:9])
-
-    # emails_series = data.MESSAGE.iloc[0:3]
-    # print(type(emails_series))
-    # print(emails_series)
-
-
-    """
 
     doc_ids_spam = data[data.CATEGORY == 1].index
     doc_ids_ham = data[data.CATEGORY == 0].index
 
-    # nested_list_all = data.MESSAGE.apply(data_processor.clean_stemmed_tokens)
-    nested_list_all = data.MESSAGE.apply(data_processor.clean_tokens)
+    nested_list_all = data.MESSAGE.apply(data_processor.clean_stemmed_tokens)
     nested_list_spam = nested_list_all.loc[doc_ids_spam]
     nested_list_ham = nested_list_all.loc[doc_ids_ham]
 
@@ -63,15 +48,9 @@ def spam_detector():
     print("Top Ham Words:\n", words_ham[:10])
 
     
-    """
+
 
     start_time = time.time()
-
-    data_wordcloud.generate_email_wordcloud(data)
-
-
-
-    # data_wordcloud.sample_machine_learning()
 
 
     # print("Shape", data[data.CATEGORY == 1].shape)
@@ -85,7 +64,6 @@ def spam_detector():
 
     print("Time Taken: ", end_time - start_time)
 
-    # data_visualizer.draw_pie_chart(data)
     # print(data_processor.clean_stemmed_tokens(data.at[2, "MESSAGE"]))
     # print(data_processor.remove_html_tags(data.at[2, "MESSAGE"]))
 

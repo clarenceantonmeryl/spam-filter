@@ -10,7 +10,8 @@ HAM_2_PATH = 'data/source/spam-assassin-corpus/ham-2'
 SPAM_1_PATH = 'data/source/spam-assassin-corpus/spam-1'
 SPAM_2_PATH = 'data/source/spam-assassin-corpus/spam-1'
 
-DATA_SOURCE_JSON_FILE = 'data/source/data-source.json'
+# DATA_SOURCE_JSON_FILE = 'data/source/data-source.json'
+DATA_SOURCE_JSON_FILE = 'data/source/data-source-original.json'
 
 
 def extract_email(file) -> str:
@@ -216,5 +217,16 @@ def load_data() -> pd.DataFrame:
 
     # print(data.head())
     # print(data.tail())
+
+    # print(data.at[2, "MESSAGE"])
+    # print(data.iat[2, 0])
+    # print(data.iat[2, 1])
+    # print(data.iat[2, 2])
+
+    # print(data.iloc[3:9])
+
+    # emails_series = data.MESSAGE.iloc[0:3]
+    # print(type(emails_series))
+    # print(emails_series)
 
     return data
