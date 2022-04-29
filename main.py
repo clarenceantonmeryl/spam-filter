@@ -116,7 +116,7 @@ def init_data():
 
 
 def next_step():
-    data_loader.progress()
+    data_loader.generate_trained_models()
 
 
 # Press the green button in the gutter to run the script.
