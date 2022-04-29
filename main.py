@@ -51,9 +51,13 @@ def spam_detector():
     # print(nested_list_all[5404])
     # print(data_pre_processor.tokenize_text(data.at[5404, 'MESSAGE']))
 
+    '''
     x_train, x_test, y_train, y_test = data_processor.generate_train_test_data(data)
+    '''
 
     start_time = time.time()
+
+    '''
     sparse_training = data_processor.make_sparse_matrix(
         x_dataframe=x_train,
         vocabulary_index=vocabulary_index,
@@ -62,18 +66,44 @@ def spam_detector():
     print("sparse_train_df\n", sparse_training)
     print("SHAPE sparse_train_df\n", sparse_training.shape)
 
-    training_data = sparse_training.groupby(['DOC_ID', 'WORD_ID', 'LABEL']).sum()
-    training_data = training_data.reset_index()
+    training_data = sparse_training.groupby(['DOC_ID', 'WORD_ID', 'LABEL']).sum().reset_index()
 
     print("TRAINING 1:")
     print(training_data)
 
     data_loader.save_csv_training_data(training_data=training_data)
 
+    '''
+
     training_data = data_loader.load_training_data()
 
-    print("TRAINING 2:")
+    print("TRAINING:")
     print(training_data)
+
+
+    '''
+    sparse_testing = data_processor.make_sparse_matrix(
+        x_dataframe=x_test,
+        vocabulary_index=vocabulary_index,
+        y_dataframe=y_test)
+
+    print("sparse_train_df\n", sparse_testing)
+    print("SHAPE sparse_train_df\n", sparse_testing.shape)
+
+    testing_data = sparse_testing.groupby(['DOC_ID', 'WORD_ID', 'LABEL']).sum().reset_index()
+
+    print("TESTING 1:")
+    print(testing_data)
+
+    data_loader.save_csv_testing_data(testing_data=testing_data)
+
+    '''
+
+    testing_data = data_loader.load_testing_data()
+
+    print("TESTING:")
+    print(testing_data)
+
 
     '''
     print(f'Shape of data frame is {data.shape}')
@@ -105,19 +135,9 @@ def spam_detector():
 
     '''
 
-    # print("Shape", data[data.CATEGORY == 1].shape)
-
-    # spam_message_series = data[data.CATEGORY == 1].MESSAGE.apply(data_pre_processor.clean_stemmed_tokens)
-    # spam_word_list = [word for sub_list in spam_message_series for word in sub_list]
-
-    # print(len(spam_word_list))
-
     end_time = time.time()
 
     print("Time Taken: ", end_time - start_time)
-
-    # print(data_processor.clean_stemmed_tokens(data.at[2, "MESSAGE"]))
-    # print(data_processor.remove_html_tags(data.at[2, "MESSAGE"]))
 
 
 # Press the green button in the gutter to run the script.

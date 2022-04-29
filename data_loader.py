@@ -16,6 +16,7 @@ DATA_STEMMED_CSV_FILE = 'data/source/data-stemmed.csv'
 VOCABULARY_CSV_FILE = 'data/source/vocabulary.csv'
 
 TRAINING_DATA_FILE = 'data/train/train.csv'
+TESTING_DATA_FILE = 'data/train/test.csv'
 
 
 def extract_email(file) -> str:
@@ -233,6 +234,8 @@ def load_data() -> pd.DataFrame:
     # print(type(emails_series))
     # print(emails_series)
 
+    # print("Shape", data[data.CATEGORY == 1].shape)
+
     return data
 
 
@@ -299,3 +302,12 @@ def save_csv_training_data(training_data: pd.DataFrame):
 def load_training_data() -> pd.DataFrame:
     training_data = pd.read_csv(TRAINING_DATA_FILE)
     return training_data
+
+
+def save_csv_testing_data(testing_data: pd.DataFrame):
+    testing_data.to_csv(TESTING_DATA_FILE)
+
+
+def load_testing_data() -> pd.DataFrame:
+    testing_data = pd.read_csv(TESTING_DATA_FILE)
+    return testing_data
