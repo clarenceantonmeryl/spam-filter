@@ -207,7 +207,7 @@ def load_data_from_json() -> pd.DataFrame:
     return data
 
 
-def load_data() -> pd.DataFrame:
+def load_dataframe() -> pd.DataFrame:
 
     """
     Load the source data as DataFrame.
@@ -330,21 +330,78 @@ def load_vocabulary() -> pd.DataFrame:
     return vocabulary
 
 
-def save_csv_training_data(training_data: pd.DataFrame):
+def save_training_data(training_data: pd.DataFrame):
     training_data.to_csv(TRAINING_CSV_FILE)
     np.savetxt(TRAINING_TXT_FILE, training_data, fmt='%d')
 
 
-def load_training_data() -> pd.DataFrame:
-    training_data = pd.read_csv(TRAINING_CSV_FILE)
-    return training_data
-
-
-def save_csv_testing_data(testing_data: pd.DataFrame):
+def save_testing_data(testing_data: pd.DataFrame):
     testing_data.to_csv(TESTING_CSV_FILE)
     np.savetxt(TESTING_TXT_FILE, testing_data, fmt='%d')
 
 
-def load_testing_data() -> pd.DataFrame:
+def load_training_dataframe() -> pd.DataFrame:
+    training_data = pd.read_csv(TRAINING_CSV_FILE)
+    return training_data
+
+
+def load_testing_dataframe() -> pd.DataFrame:
     testing_data = pd.read_csv(TESTING_CSV_FILE)
     return testing_data
+
+
+def load_sparse_data() -> (np.ndarray, np.ndarray):
+    sparse_train_data = np.loadtxt(TRAINING_TXT_FILE, delimiter=' ', dtype=int)
+    # print(type(sparse_train_data))
+    # print(sparse_train_data[:10])
+    print("Rows in Training", sparse_train_data.shape)
+
+    sparse_test_data = np.loadtxt(TESTING_TXT_FILE, delimiter=' ', dtype=int)
+    # print(type(sparse_test_data))
+    # print(sparse_test_data[:10])
+    print("Rows in Training", sparse_test_data.shape)
+
+    print("Emails in training", np.unique(sparse_train_data[:, 0]).size)
+    print("Emails in testing", np.unique(sparse_test_data[:, 0]).size)
+
+    return sparse_train_data, sparse_test_data
+
+
+def make_full_matrix(sparse_matrix, doc_id_index=0, word_id_index=1, category_index=2, occurrence_index=3):
+
+    """
+    Form a full matrix from a sparse matrix. Return a pandas dataframe.
+
+    :param sparse_matrix: numpy array
+    :param doc_id_index: position of the document id in the sparse matrix. Default: 1st column
+    :param word_id_index: position of the word id in the sparse matrix. Default: 2nd column
+    :param category_index: position of the label (spam is 1, nonspam is 0). Default: 3rd column
+    :param occurrence_index: position of occurrence of word in sparse matrix. Default: 4th column
+    :return: Return a pandas dataframe of full matrix
+    """
+
+    column_names = ['DOC_ID'] + ['CATEGORY'] + list(range(0, constant.VOCABULARY_SIZE))
+    index_names = np.unique(sparse_matrix[:, 0])
+
+    full_matrix = pd.DataFrame(index=index_names, columns=column_names).fillna(value=0)
+
+    for row in range(sparse_matrix.shape[0]):
+        doc_id = sparse_matrix[row][doc_id_index]
+        word_id = sparse_matrix[row][word_id_index]
+        category = sparse_matrix[row][category_index]
+        occurrence = sparse_matrix[row][occurrence_index]
+
+        full_matrix.at[doc_id, 'DOC_ID'] = doc_id
+        full_matrix.at[doc_id, 'CATEGORY'] = category
+        full_matrix.at[doc_id, word_id] = occurrence
+
+    full_matrix.set_index('DOC_ID', inplace=True)
+    return full_matrix
+
+
+def progress():
+    sparse_train_data, sparse_test_data = load_sparse_data()
+
+    full_train_data = make_full_matrix(sparse_train_data)
+    print(full_train_data)
+

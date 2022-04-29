@@ -14,12 +14,11 @@ import data_wordcloud
 import time
 
 
-def spam_detector():
-
+def init_data():
 
     # data_pre_processor.download_resource()
 
-    # data = data_loader.load_data()
+    # data = data_loader.load_dataframe()
 
     # data_visualizer.draw_pie_chart(data)
     # data_wordcloud.generate_email_wordcloud(data)
@@ -51,12 +50,13 @@ def spam_detector():
     # print(nested_list_all[5404])
     # print(data_pre_processor.tokenize_text(data.at[5404, 'MESSAGE']))
 
-    x_train, x_test, y_train, y_test = data_processor.generate_train_test_data(data)
     '''
+    x_train, x_test, y_train, y_test = data_processor.generate_train_test_data(data)
     '''
 
     start_time = time.time()
 
+    '''
     sparse_training = data_processor.make_sparse_matrix(
         x_dataframe=x_train,
         vocabulary_index=vocabulary_index,
@@ -70,13 +70,17 @@ def spam_detector():
     print("TRAINING 1:")
     print(training_data)
 
-    data_loader.save_csv_training_data(training_data=training_data)
+    data_loader.save_training_data(training_data=training_data)
+    
+    '''
 
-    # training_data = data_loader.load_training_data()
-    #
-    # print("TRAINING:")
-    # print(training_data)
+    training_data = data_loader.load_training_dataframe()
 
+    print("TRAINING:")
+    print(training_data)
+
+    '''
+    
     sparse_testing = data_processor.make_sparse_matrix(
         x_dataframe=x_test,
         vocabulary_index=vocabulary_index,
@@ -89,17 +93,21 @@ def spam_detector():
     print("TESTING 1:")
     print(testing_data)
 
-    data_loader.save_csv_testing_data(testing_data=testing_data)
+    data_loader.save_testing_data(testing_data=testing_data)
 
-    # testing_data = data_loader.load_testing_data()
-    #
-    # print("TESTING:")
-    # print(testing_data)
+    '''
+
+    testing_data = data_loader.load_testing_dataframe()
+
+    print("TESTING:")
+    print(testing_data)
 
     '''
     Find out which email documents have not made its way to the train and test data.
     '''
-    excluded_ids = data_processor.extract_excluded_doc_ids(data=data, training_data=training_data, testing_data=testing_data)
+    excluded_ids = data_processor.extract_excluded_doc_ids(
+        data=data, training_data=training_data, testing_data=testing_data
+    )
     print("Excluded IDs:", excluded_ids)
 
     end_time = time.time()
@@ -107,8 +115,12 @@ def spam_detector():
     print("Time Taken: ", end_time - start_time)
 
 
+def next_step():
+    data_loader.progress()
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    spam_detector()
+    next_step()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
