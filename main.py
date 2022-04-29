@@ -9,6 +9,7 @@ import data_loader
 import data_pre_processor
 # import data_visualizer
 import data_processor
+import data_training
 import data_wordcloud
 
 import time
@@ -110,18 +111,22 @@ def init_data():
     print("Excluded IDs:", excluded_ids)
 
 
-def next_step():
-    start_time = time.time()
+def train_data():
+    sparse_train_data, sparse_test_data = data_loader.load_sparse_data()
 
-    data_loader.generate_trained_models()
+    prob_tokens_spam, prob_tokens_nonspam, prob_tokens_all, x_test, y_test = data_training.generate_trained_models(
+        sparse_train_data, sparse_test_data
+    )
 
-    end_time = time.time()
-    print("Time Taken: ", end_time - start_time)
+    data_loader.save_test_models(prob_tokens_spam, prob_tokens_nonspam, prob_tokens_all, x_test, y_test)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    next_step()
+    start_time = time.time()
+    train_data()
+    end_time = time.time()
+    print("Time Taken: ", end_time - start_time)
 
 
 
