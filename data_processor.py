@@ -115,3 +115,22 @@ def make_sparse_matrix(x_dataframe: pd.DataFrame, vocabulary_index, y_dataframe)
                 sparse_matrix.append(item)
 
     return pd.DataFrame(sparse_matrix)
+
+
+def extract_excluded_doc_ids(data: pd.DataFrame, training_data: pd.DataFrame, testing_data: pd.DataFrame) -> list:
+
+    # IDs from source data
+    data_doc_ids = set(data.index.values.tolist())
+
+    # IDs from training and testing data
+    training_doc_ids = set(training_data.DOC_ID)
+    testing_doc_ids = set(testing_data.DOC_ID)
+
+    # Combine training and testing IDs
+    included_ids = training_doc_ids.copy()
+    included_ids.update(testing_doc_ids)
+
+    # Sort the excluded IDs
+    excluded_ids = sorted(data_doc_ids - included_ids)
+
+    return excluded_ids

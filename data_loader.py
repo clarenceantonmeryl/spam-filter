@@ -1,3 +1,5 @@
+import numpy as np
+
 import utility.constant as constant
 
 import os
@@ -15,8 +17,11 @@ DATA_SOURCE_JSON_FILE = 'data/source/data-source-original.json'
 DATA_STEMMED_CSV_FILE = 'data/source/data-stemmed.csv'
 VOCABULARY_CSV_FILE = 'data/source/vocabulary.csv'
 
-TRAINING_DATA_FILE = 'data/train/train.csv'
-TESTING_DATA_FILE = 'data/train/test.csv'
+TRAINING_CSV_FILE = 'data/train/train.csv'
+TESTING_CSV_FILE = 'data/train/test.csv'
+
+TRAINING_TXT_FILE = 'data/train/train.txt'
+TESTING_TXT_FILE = 'data/train/test.txt'
 
 
 def extract_email(file) -> str:
@@ -236,6 +241,36 @@ def load_data() -> pd.DataFrame:
 
     # print("Shape", data[data.CATEGORY == 1].shape)
 
+    '''
+    print(f'Shape of data frame is {data.shape}')
+
+    doc_ids_spam = data[data.CATEGORY == 1].index
+    doc_ids_ham = data[data.CATEGORY == 0].index
+
+    # nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_stemmed_tokens)
+    nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_msg_no_html)
+    nested_list_spam = nested_list_all.loc[doc_ids_spam]
+    nested_list_ham = nested_list_all.loc[doc_ids_ham]
+
+    print(nested_list_spam.shape)
+    print(nested_list_ham.shape)
+
+    flat_list_spam = [word for sub_list in nested_list_spam for word in sub_list]
+    flat_list_ham = [word for sub_list in nested_list_ham for word in sub_list]
+    print("Spam Word Count:", len(flat_list_spam))
+    print("Ham Word Count: ", len(flat_list_ham))
+
+    words_spam = pd.Series(flat_list_spam).value_counts()
+    words_ham = pd.Series(flat_list_ham).value_counts()
+
+    print(words_ham.shape[0])
+    print(words_spam.shape[0])
+
+    print("Top Spam Words:\n", words_spam[:10])
+    print("Top Ham Words:\n", words_ham[:10])
+
+    '''
+
     return data
 
 
@@ -296,18 +331,20 @@ def load_vocabulary() -> pd.DataFrame:
 
 
 def save_csv_training_data(training_data: pd.DataFrame):
-    training_data.to_csv(TRAINING_DATA_FILE)
+    training_data.to_csv(TRAINING_CSV_FILE)
+    np.savetxt(TRAINING_TXT_FILE, training_data, fmt='%d')
 
 
 def load_training_data() -> pd.DataFrame:
-    training_data = pd.read_csv(TRAINING_DATA_FILE)
+    training_data = pd.read_csv(TRAINING_CSV_FILE)
     return training_data
 
 
 def save_csv_testing_data(testing_data: pd.DataFrame):
-    testing_data.to_csv(TESTING_DATA_FILE)
+    testing_data.to_csv(TESTING_CSV_FILE)
+    np.savetxt(TESTING_TXT_FILE, testing_data, fmt='%d')
 
 
 def load_testing_data() -> pd.DataFrame:
-    testing_data = pd.read_csv(TESTING_DATA_FILE)
+    testing_data = pd.read_csv(TESTING_CSV_FILE)
     return testing_data

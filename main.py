@@ -51,13 +51,12 @@ def spam_detector():
     # print(nested_list_all[5404])
     # print(data_pre_processor.tokenize_text(data.at[5404, 'MESSAGE']))
 
-    '''
     x_train, x_test, y_train, y_test = data_processor.generate_train_test_data(data)
+    '''
     '''
 
     start_time = time.time()
 
-    '''
     sparse_training = data_processor.make_sparse_matrix(
         x_dataframe=x_train,
         vocabulary_index=vocabulary_index,
@@ -73,22 +72,17 @@ def spam_detector():
 
     data_loader.save_csv_training_data(training_data=training_data)
 
-    '''
+    # training_data = data_loader.load_training_data()
+    #
+    # print("TRAINING:")
+    # print(training_data)
 
-    training_data = data_loader.load_training_data()
-
-    print("TRAINING:")
-    print(training_data)
-
-
-    '''
     sparse_testing = data_processor.make_sparse_matrix(
         x_dataframe=x_test,
         vocabulary_index=vocabulary_index,
         y_dataframe=y_test)
 
     print("sparse_train_df\n", sparse_testing)
-    print("SHAPE sparse_train_df\n", sparse_testing.shape)
 
     testing_data = sparse_testing.groupby(['DOC_ID', 'WORD_ID', 'LABEL']).sum().reset_index()
 
@@ -97,43 +91,16 @@ def spam_detector():
 
     data_loader.save_csv_testing_data(testing_data=testing_data)
 
-    '''
-
-    testing_data = data_loader.load_testing_data()
-
-    print("TESTING:")
-    print(testing_data)
-
+    # testing_data = data_loader.load_testing_data()
+    #
+    # print("TESTING:")
+    # print(testing_data)
 
     '''
-    print(f'Shape of data frame is {data.shape}')
-
-    doc_ids_spam = data[data.CATEGORY == 1].index
-    doc_ids_ham = data[data.CATEGORY == 0].index
-
-    # nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_stemmed_tokens)
-    nested_list_all = data.MESSAGE.apply(data_pre_processor.clean_msg_no_html)
-    nested_list_spam = nested_list_all.loc[doc_ids_spam]
-    nested_list_ham = nested_list_all.loc[doc_ids_ham]
-
-    print(nested_list_spam.shape)
-    print(nested_list_ham.shape)
-
-    flat_list_spam = [word for sub_list in nested_list_spam for word in sub_list]
-    flat_list_ham = [word for sub_list in nested_list_ham for word in sub_list]
-    print("Spam Word Count:", len(flat_list_spam))
-    print("Ham Word Count: ", len(flat_list_ham))
-
-    words_spam = pd.Series(flat_list_spam).value_counts()
-    words_ham = pd.Series(flat_list_ham).value_counts()
-
-    print(words_ham.shape[0])
-    print(words_spam.shape[0])
-
-    print("Top Spam Words:\n", words_spam[:10])
-    print("Top Ham Words:\n", words_ham[:10])
-
+    Find out which email documents have not made its way to the train and test data.
     '''
+    excluded_ids = data_processor.extract_excluded_doc_ids(data=data, training_data=training_data, testing_data=testing_data)
+    print("Excluded IDs:", excluded_ids)
 
     end_time = time.time()
 
