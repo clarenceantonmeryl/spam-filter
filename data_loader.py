@@ -27,6 +27,9 @@ SPAM_PROBABILITY_FILE = 'data/test/spam_probability.txt'
 HAM_PROBABILITY_FILE = 'data/test/ham_probability.txt'
 ALL_PROBABILITY_FILE = 'data/test/all_probability.txt'
 
+TEST_FEATURE = 'data/test/test_feature.txt'
+TEST_TARGET = 'data/test/test_target.txt'
+
 
 def extract_email(file) -> str:
 
@@ -406,6 +409,7 @@ def make_full_matrix(sparse_matrix, doc_id_index=0, word_id_index=1, category_in
 def generate_trained_models():
     sparse_train_data, sparse_test_data = load_sparse_data()
 
+    '''
     full_train_data = make_full_matrix(sparse_train_data)
 
     print(full_train_data)
@@ -498,4 +502,19 @@ def generate_trained_models():
     np.savetxt(SPAM_PROBABILITY_FILE, prob_tokens_spam)
     np.savetxt(HAM_PROBABILITY_FILE, prob_tokens_nonspam)
     np.savetxt(ALL_PROBABILITY_FILE, prob_tokens_all)
+    '''
+
+    print(sparse_test_data.shape)
+
+    full_test_data = make_full_matrix(sparse_test_data)
+    # full_test_features
+    x_test = full_test_data.loc[:, full_test_data.columns != 'CATEGORY']
+    y_test = full_test_data.CATEGORY
+
+    print(x_test)
+    print(y_test)
+
+    np.savetxt(TEST_FEATURE, x_test, fmt='%d')
+    np.savetxt(TEST_TARGET, y_test, fmt='%d')
+
 

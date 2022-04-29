@@ -54,7 +54,6 @@ def init_data():
     x_train, x_test, y_train, y_test = data_processor.generate_train_test_data(data)
     '''
 
-    start_time = time.time()
 
     '''
     sparse_training = data_processor.make_sparse_matrix(
@@ -110,17 +109,20 @@ def init_data():
     )
     print("Excluded IDs:", excluded_ids)
 
-    end_time = time.time()
-
-    print("Time Taken: ", end_time - start_time)
-
 
 def next_step():
+    start_time = time.time()
+
     data_loader.generate_trained_models()
+
+    end_time = time.time()
+    print("Time Taken: ", end_time - start_time)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     next_step()
+
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
