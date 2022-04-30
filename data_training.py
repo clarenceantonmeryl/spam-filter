@@ -115,9 +115,9 @@ def generate_trained_models(sparse_train_data, sparse_test_data):
 
     # P(Token | Ham) - Probability that a Token Occurs given the Email is non-spam
 
-    prob_tokens_nonspam = summed_ham_features / (ham_word_count + constant.VOCABULARY_SIZE)
-    print("prob_tokens_nonspam\n", prob_tokens_nonspam)
-    print("prob_tokens_nonspam sum = 1\n", prob_tokens_nonspam.sum())
+    prob_tokens_ham = summed_ham_features / (ham_word_count + constant.VOCABULARY_SIZE)
+    print("prob_tokens_ham\n", prob_tokens_ham)
+    print("prob_tokens_ham sum = 1\n", prob_tokens_ham.sum())
 
     # P(Token) - Probability that token occurs
 
@@ -135,4 +135,4 @@ def generate_trained_models(sparse_train_data, sparse_test_data):
     print(x_test)
     print(y_test)
 
-    return prob_tokens_spam, prob_tokens_nonspam, prob_tokens_all, x_test, y_test
+    return prob_tokens_spam, prob_tokens_ham, prob_tokens_all, x_test, y_test

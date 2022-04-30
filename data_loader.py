@@ -14,6 +14,8 @@ SPAM_2_PATH = 'data/source/spam-assassin-corpus/spam-1'
 
 # DATA_SOURCE_JSON_FILE = 'data/source/data-source.json'
 DATA_SOURCE_JSON_FILE = 'data/source/data-source-original.json'
+
+DATA_STEMMED_JSON_FILE = 'data/source/data-stemmed.json'
 DATA_STEMMED_CSV_FILE = 'data/source/data-stemmed.csv'
 VOCABULARY_CSV_FILE = 'data/source/vocabulary.csv'
 
@@ -22,6 +24,8 @@ TESTING_CSV_FILE = 'data/train/test.csv'
 
 TRAINING_TXT_FILE = 'data/train/train.txt'
 TESTING_TXT_FILE = 'data/train/test.txt'
+
+# TESTING
 
 SPAM_PROBABILITY_FILE = 'data/test/spam_probability.txt'
 HAM_PROBABILITY_FILE = 'data/test/ham_probability.txt'
@@ -32,7 +36,6 @@ TEST_TARGET = 'data/test/test_target.txt'
 
 
 def extract_email(file) -> str:
-
     """
     Extract the email body from the file path.
 
@@ -65,7 +68,6 @@ def extract_email(file) -> str:
 
 
 def email_body_generator(path):
-
     """
     Email body generator function
     :param path: Path of a directory where raw emails are present.
@@ -81,7 +83,6 @@ def email_body_generator(path):
 
 
 def get_dataframe_from_path(path, category) -> pd.DataFrame:
-
     """
     Get the DataFrame object of all emails in a path.
 
@@ -100,7 +101,6 @@ def get_dataframe_from_path(path, category) -> pd.DataFrame:
 
 
 def get_data_source_from_raw_files() -> pd.DataFrame:
-
     """
     Fetch the DataFrame of all source emails.
 
@@ -185,8 +185,9 @@ def get_data_source_from_raw_files() -> pd.DataFrame:
     return data
 
 
-def save_json_data(data: pd.DataFrame) -> None:
 
+
+def save_json_data(data: pd.DataFrame) -> None:
     """
     Save the DataFrame as a JSON file.
 
@@ -197,7 +198,6 @@ def save_json_data(data: pd.DataFrame) -> None:
 
 
 def load_data_from_json() -> pd.DataFrame:
-
     """
     Load and return a DataFrame from JSON file.
 
@@ -215,7 +215,6 @@ def load_data_from_json() -> pd.DataFrame:
 
 
 def load_dataframe() -> pd.DataFrame:
-
     """
     Load the source data as DataFrame.
 
@@ -281,8 +280,17 @@ def load_dataframe() -> pd.DataFrame:
     return data
 
 
-def save_stemmed_csv_data(data: pd.DataFrame):
+def save_stemmed_json_data(data: pd.DataFrame) -> None:
+    """
+    Save the DataFrame as a JSON file.
 
+    :param data: The DataFrame to be saved as JSON file.
+    """
+
+    data.to_json(DATA_STEMMED_JSON_FILE)
+
+
+def save_stemmed_csv_data(data: pd.DataFrame):
     """
     Save the DataFrame as a JSON file.
 
@@ -293,7 +301,6 @@ def save_stemmed_csv_data(data: pd.DataFrame):
 
 
 def load_stemmed_data() -> pd.DataFrame:
-
     """
     Load the stemmed data as DataFrame.
 
@@ -321,7 +328,6 @@ def save_csv_vocabulary(vocabulary: pd.DataFrame):
 
 
 def load_vocabulary() -> pd.DataFrame:
-
     """
     Load the vocabulary data as DataFrame.
 
@@ -374,15 +380,26 @@ def load_sparse_data() -> (np.ndarray, np.ndarray):
     return sparse_train_data, sparse_test_data
 
 
-def save_test_models(prob_tokens_spam, prob_tokens_nonspam, prob_tokens_all, x_test, y_test):
+def save_test_models(prob_tokens_spam, prob_tokens_ham, prob_tokens_all, x_test, y_test):
     # Save the trained models
     np.savetxt(SPAM_PROBABILITY_FILE, prob_tokens_spam)
-    np.savetxt(HAM_PROBABILITY_FILE, prob_tokens_nonspam)
+    np.savetxt(HAM_PROBABILITY_FILE, prob_tokens_ham)
     np.savetxt(ALL_PROBABILITY_FILE, prob_tokens_all)
 
-    # Save the test data
+    # Save the Features and Target data
     np.savetxt(TEST_FEATURE, x_test, fmt='%d')
     np.savetxt(TEST_TARGET, y_test, fmt='%d')
 
 
+def load_test_models():
+    # Load the trained models
+    prob_tokens_spam = np.loadtxt(SPAM_PROBABILITY_FILE, delimiter=' ')
+    prob_tokens_ham = np.loadtxt(HAM_PROBABILITY_FILE, delimiter=' ')
+    prob_tokens_all = np.loadtxt(ALL_PROBABILITY_FILE, delimiter=' ')
+
+    # Load the Features and Target data
+    x_test = np.loadtxt(TEST_FEATURE, delimiter=' ')
+    y_test = np.loadtxt(TEST_TARGET, delimiter=' ')
+
+    return prob_tokens_spam, prob_tokens_ham, prob_tokens_all, x_test, y_test
 

@@ -9,6 +9,7 @@ import data_loader
 import data_pre_processor
 # import data_visualizer
 import data_processor
+import data_testing
 import data_training
 import data_wordcloud
 
@@ -26,6 +27,7 @@ def init_data():
 
     # data = data_processor.generate_stemmed_messages(data)
     # data_loader.save_stemmed_csv_data(data)
+    # data_loader.save_stemmed_json_data(data)
 
     data = data_loader.load_stemmed_data()
 
@@ -114,17 +116,23 @@ def init_data():
 def train_data():
     sparse_train_data, sparse_test_data = data_loader.load_sparse_data()
 
-    prob_tokens_spam, prob_tokens_nonspam, prob_tokens_all, x_test, y_test = data_training.generate_trained_models(
+    prob_tokens_spam, prob_tokens_ham, prob_tokens_all, x_test, y_test = data_training.generate_trained_models(
         sparse_train_data, sparse_test_data
     )
 
-    data_loader.save_test_models(prob_tokens_spam, prob_tokens_nonspam, prob_tokens_all, x_test, y_test)
+    data_loader.save_test_models(prob_tokens_spam, prob_tokens_ham, prob_tokens_all, x_test, y_test)
+
+
+def test_data():
+    data_testing.testing_model()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     start_time = time.time()
-    train_data()
+    # train_data()
+    # test_data()
+    create_json_file()
     end_time = time.time()
     print("Time Taken: ", end_time - start_time)
 
