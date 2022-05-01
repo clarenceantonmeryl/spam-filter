@@ -15,6 +15,8 @@ import data_wordcloud
 
 import time
 
+import spam_filter
+
 
 def init_data():
 
@@ -132,7 +134,9 @@ if __name__ == '__main__':
     start_time = time.time()
     # train_data()
     # test_data()
-    create_json_file()
+
+    spam_filter.predict()
+
     end_time = time.time()
     print("Time Taken: ", end_time - start_time)
 
